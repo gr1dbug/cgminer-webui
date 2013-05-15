@@ -6,6 +6,10 @@ import com.gridbuglabs.cgminer.api.DevsResult
 import com.gridbuglabs.cgminer.api.GpuCountResult
 import com.gridbuglabs.cgminer.api.GpuResult
 import grails.converters.JSON
+import groovyx.net.http.ContentType
+import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.Method
+import org.json.simple.JSONArray
 
 class CgmapiController {
 
@@ -43,7 +47,7 @@ class CgmapiController {
 
     def gpuvalue() {
         def gpunum = Integer.parseInt(params["gpu"])
-                                                             ;
+
         // we want to get the indicated value reading for the indicated gpu
         GpuResult result = api.gpu(gpunum)
 
@@ -63,5 +67,19 @@ class CgmapiController {
     def gpucount() {
         GpuCountResult result = api.gpucount();
         render(gson.toJson(result))
+    }
+
+
+    def poolstats() {
+        def poolurl = params["poolurl"];
+        def apikey = params["apikey"];
+
+        def http = new HTTPBuilder(poolurl)
+        http.request(Method.GET, ContentType.JSON) {
+            uri.path = "/api"
+            uri.query = [api_key: apikey]
+            response.success = { resp, json  -> render(json) }
+            response.failure = { resp -> render("api call failed") }
+        }
     }
 }

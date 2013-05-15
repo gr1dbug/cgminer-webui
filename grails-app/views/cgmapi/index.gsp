@@ -8,6 +8,7 @@
 
     <script src="http://code.jquery.com/jquery.js"></script>
     <script src="js/jquery.flot.js"></script>
+    <script src="js/jquery.flot.time.js"></script>
     <script src="js/bootstrap.min.js"></script>
 <!--    <script src="js/raphael.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/ico.min.js" type="text/javascript" charset="utf-8"></script>    -->
@@ -24,7 +25,7 @@
     <div ng-repeat="gpu in latestgpus">
         <div id="{{gpu.msg}}" style="width: 200px; height: 125px; margin: 50px">
             <h3>{{gpu.msg}}</h3>
-            <cgmchart value="mhs5s"></cgmchart>
+            <cgmchart value="temperature"></cgmchart>
         </div>
     </div>
 </div>

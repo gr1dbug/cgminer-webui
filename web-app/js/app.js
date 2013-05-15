@@ -44,6 +44,14 @@ function GpuController($scope, $http) {
         });
     };
 
+    $scope.getTimeValueSeries = function(gpu, key) {
+        var out = [];
+        for (var i = 0; i < $scope.gpus[gpu].length; i++) {
+            out.push([$scope.gpus[gpu][i]["timestamp"], $scope.gpus[gpu][i][key]]);
+        }
+        return out;
+    }
+
     $scope.zipseries = function(data) {
         var ret = [];
         for (var i = 0; i < data.length; i++) {
@@ -54,28 +62,30 @@ function GpuController($scope, $http) {
 
     $scope.chart = function(gpu, elt, value) {
         $scope.series = [{
-            data: $scope.zipseries($scope.getValueSeries(gpu.msg, value)),
+            data: $scope.getTimeValueSeries(gpu.msg, value),
             lines: {
-                fill: true
+                fill: false
             }
         }]
 
-        $scope.charts[gpu.msg] = $.plot(elt, $scope.series, {
-            xaxis: {
-                show: true,
-                position: "bottom"
-            },
+        $scope.xaxis = {
+            show: true,
+                position: "bottom",
+                mode: "time",
+                timezone: "browser",
+                ticks: 2
+        };
 
-            yaxis: {
-                show: true,
+        $scope.yaxis = {
+            show: true,
                 position: "left"
-            }
-        });
+        };
 
-        $scope.charts[gpu.msg].draw();
+        $scope.charts[gpu.msg] = $.plot(elt, $scope.series, { xaxis: $scope.xaxis, yaxis: $scope.yaxis });
+
         setInterval(function updatedata() {
             $scope.updategpu(gpu);
-            $scope.updatechart(gpu, value);
+            $scope.updatechart(gpu, elt, value);
         }, 1000);
     };
 
@@ -85,9 +95,9 @@ function GpuController($scope, $http) {
         });
     };
 
-    $scope.updatechart = function(gpu, value) {
-        $scope.series[0].data = $scope.zipseries($scope.getValueSeries(gpu.msg, value));
-        $scope.charts[gpu.msg].setData($scope.series);
+    $scope.updatechart = function(gpu, elt, value) {
+        $scope.series[0].data = $scope.getTimeValueSeries(gpu.msg, value);
+        $scope.charts[gpu.msg] = $.plot(elt, $scope.series, { xaxis: $scope.xaxis, yaxis: $scope.yaxis });
         $scope.charts[gpu.msg].draw();
     }
 }

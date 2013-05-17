@@ -12,18 +12,21 @@ angular.module("cgmui", [])
             restrict: "E",
             replace: true,
             transclude: true,
-            template: "<div style='width: 300px; height: 150px;'></div>",
+            template: "<div style='width: 290px; height: 115px; display: inline-block' class='span4'></div>",
             link: function(scope, element, attrs) {
-                scope.chart(scope.gpu, element, attrs.value);
+                scope.chart(scope.gpu, element, attrs.value, attrs.label);
             }
         }
     }
 );
 
+
 function GpuController($scope, $http) {
     $scope.charts = {};
     $scope.latestgpus = {};
     $scope.gpus = {};
+    $scope.series = {};
+    $scope.updatetimers = {};
 
     $http.get('cgmapi/gpucount').success(function(data) {
         $scope.gpucount = data.count;
@@ -60,44 +63,94 @@ function GpuController($scope, $http) {
         return ret;
     }
 
-    $scope.chart = function(gpu, elt, value) {
-        $scope.series = [{
+    $scope.chart = function(gpu, elt, value, label) {
+        $scope.series[gpu.msg+value] = [{
             data: $scope.getTimeValueSeries(gpu.msg, value),
+            label: label,
             lines: {
                 fill: false
             }
         }]
 
+        $scope.legend = {
+            backgroundColor: "#333333",
+            position: "nw"
+        }
+
+        $scope.colors = ["#18f51c"]
+
         $scope.xaxis = {
             show: true,
-                position: "bottom",
-                mode: "time",
-                timezone: "browser",
-                ticks: 2
+            position: "bottom",
+            color: "#cccccc",
+            tickColor: "#cccccc",
+            mode: "time",
+            timezone: "browser",
+            ticks: 2
         };
 
         $scope.yaxis = {
             show: true,
-                position: "left"
+            position: "left",
+            color: "#cccccc",
+            ticks: 2,
+            tickFormatter: function(num) { return num.toFixed(2) }
         };
 
-        $scope.charts[gpu.msg] = $.plot(elt, $scope.series, { xaxis: $scope.xaxis, yaxis: $scope.yaxis });
+        $scope.grid = {
+            color: "#cccccc"
+        };
 
-        setInterval(function updatedata() {
-            $scope.updategpu(gpu);
-            $scope.updatechart(gpu, elt, value);
-        }, 1000);
+        $scope.charts[gpu.msg] = $.plot(elt, $scope.series[gpu.msg+value], { xaxis: $scope.xaxis, yaxis: $scope.yaxis, grid: $scope.grid, colors: $scope.colors, legend: $scope.legend});
+
+        if ($scope.updatetimers[gpu.msg] == null) {
+            $scope.updatetimers[gpu.msg] = setInterval(function updatedata() {
+                $scope.updategpu(gpu);
+                $scope.updatechart(gpu, elt, value);
+            }, 500);
+        }
     };
 
     $scope.updategpu = function(gpu) {
         $http.get('cgmapi/gpu?gpu='+gpu.call).success(function(data) {
             $scope.gpus[data[0].msg] = data;
+            $scope.latestgpus[data[0].msg] = data[data.length-1];
         });
     };
 
     $scope.updatechart = function(gpu, elt, value) {
-        $scope.series[0].data = $scope.getTimeValueSeries(gpu.msg, value);
-        $scope.charts[gpu.msg] = $.plot(elt, $scope.series, { xaxis: $scope.xaxis, yaxis: $scope.yaxis });
+        $scope.series[gpu.msg+value][0].data = $scope.getTimeValueSeries(gpu.msg, value);
+        $scope.charts[gpu.msg] = $.plot(elt, $scope.series[gpu.msg+value], { xaxis: $scope.xaxis, yaxis: $scope.yaxis, grid: $scope.grid, colors: $scope.colors, legend: $scope.legend });
         $scope.charts[gpu.msg].draw();
     }
+};
+
+function CoinController($scope, $http) {
+    $http.get('cgmapi/coin').success(function(data) {
+        $scope.coin = data;
+    });
+};
+
+function PoolController($scope, $http) {
+
+    $scope.latestpools = {};
+
+    $scope.fetch = function() {
+        $http.get('cgmapi/pools').success(function(data) {
+            $scope.pools = data;
+            for (var i = 0; i < data[data.length-1].records.length; i++) {
+                console.log("i is: " + i + ", call is: " + data[data.length-1].records[i].call);
+                $scope.latestpools[data[data.length-1].records[i].call] = data[data.length-1].records[i];
+            }
+        });
+    };
+
+
+    $scope.fetch();
+    if ($scope.updatetimer == null) {
+        $scope.updatetimer = setInterval(function updatedata() {
+            $scope.fetch();
+        }, 500);
+    }
+
 }

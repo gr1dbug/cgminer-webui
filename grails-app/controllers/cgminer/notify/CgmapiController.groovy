@@ -18,22 +18,8 @@ class CgmapiController {
     CgminerApiService cgminerApiService
     CGMinerApi api = new CGMinerApi()
     Gson gson = new  Gson();
-    DevsResult devs
-    GpuResult gpu0
 
     def index() {
-        devs = api.devs()
-        gpu0 = api.gpu(0)
-    }
-
-    private def storeInSession(Object value, String valname, int limit) {
-        if (session[valname] == null) session[valname] = []
-
-        // add our new temp reading to the end of the list
-        session[valname].add(value);
-
-        // if we've hit the # samples limit, remove the oldest sample
-        if (session[valname].size() > limit) session[valname].remove(0);
     }
 
     def gpu() {

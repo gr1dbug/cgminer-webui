@@ -15,6 +15,7 @@ import org.json.simple.JSONArray
 
 class CgmapiController {
 
+    CgminerApiService cgminerApiService
     CGMinerApi api = new CGMinerApi()
     Gson gson = new  Gson();
     DevsResult devs
@@ -37,14 +38,7 @@ class CgmapiController {
 
     def gpu() {
         def gpunum = Integer.parseInt(params["gpu"])
-
-        GpuResult result = api.gpu(gpunum)
-
-        // result.msg is the name of this gpu, i.e. "GPU1" or "GPU0", etc
-        storeInSession(result, result.msg, 25)
-
-        // and return the temps as a json array
-        render(gson.toJson(session[result.msg]))
+        render(gson.toJson(cgminerApiService.gpu(gpunum)))
     }
 
     def gpucount() {

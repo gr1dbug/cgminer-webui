@@ -44,12 +44,14 @@ grails.project.dependency.resolution = {
         // runtime 'mysql:mysql-connector-java:5.1.22'
         runtime "com.google.code.gson:gson:2.2.3"
         runtime "org.codehaus.groovy.modules.http-builder:http-builder:0.5.2"
+        compile "com.gridbuglabs:cgminer-java-api:1.0-SNAPSHOT"
 }
 
     plugins {
         runtime ":hibernate:$grailsVersion"
         runtime ":jquery:1.8.3"
         runtime ":resources:1.1.6"
+        compile ":executor:0.3"
 
         // Uncomment these (or add new ones) to enable additional resources capabilities
         //runtime ":zipped-resources:1.0"

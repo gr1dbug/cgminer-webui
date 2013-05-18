@@ -50,7 +50,7 @@ function GpuController($scope, $http) {
     $scope.getTimeValueSeries = function(gpu, key) {
         var out = [];
         for (var i = 0; i < $scope.gpus[gpu].length; i++) {
-            out.push([$scope.gpus[gpu][i]["timestamp"], $scope.gpus[gpu][i][key]]);
+            out.push([parseInt($scope.gpus[gpu][i]["when"])*1000, $scope.gpus[gpu][i][key]]);
         }
         return out;
     }
@@ -139,7 +139,6 @@ function PoolController($scope, $http) {
         $http.get('cgmapi/pools').success(function(data) {
             $scope.pools = data;
             for (var i = 0; i < data[data.length-1].records.length; i++) {
-                console.log("i is: " + i + ", call is: " + data[data.length-1].records[i].call);
                 $scope.latestpools[data[data.length-1].records[i].call] = data[data.length-1].records[i];
             }
         });

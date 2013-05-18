@@ -47,16 +47,38 @@ class CgminerApiService {
             long now = new Date().getTime()/1000; // the "when" is a unix style timestamp, i.e. # SECONDS since 1/1/70
             def old = Gpu.findAllByWhenLessThan(now - ONE_DAY)
             old.each() { event ->
-                println("now: " + now + ", now - day: " + (now - ONE_DAY) + ", evt time: " + old.when)
+                println("now: " + now + ", now - day: " + (now - ONE_DAY) + ", evt time: " + event.when)
                 event.delete(flush: true)
             }
         }
+    }
+
+    def updatePools() {
+        Pools.withTransaction() {
+            Pools pools = apiTransformerService.pools(api.pools());
+            pools.save(flush: true)
+            def x = "aoeu"
+        }
+
+/*        Pools.withTransaction() {
+            long now = new Date().getTime()/1000; // the "when" is a unix style timestamp, i.e. # SECONDS since 1/1/70
+            def old = Pools.findAllByWhenLessThan(now - ONE_DAY)
+            old.each() { poolitem ->
+                println("now: " + now + ", now - day: " + (now - ONE_DAY) + ", evt time: " + poolitem.when)
+                poolitem.delete(flush: true)
+            }
+        }*/
     }
 
     def gpu(num) {
         // we get the results in descending order so we get the latest 25 results
         def results = Gpu.findAllByCall(num, [max: 15, order: "desc", sort: "when"])
         // what we actually want to return is the list in ascending order however
+        return results.reverse()
+    }
+
+    def pools() {
+        def results = Pools.findAll([max: 15, order: "desc", sort: "when"])
         return results.reverse()
     }
 
@@ -98,7 +120,7 @@ class CgminerApiService {
         }
 
         def updatePools() {
-
+            service.updatePools()
         }
 
         def updateGpus() {

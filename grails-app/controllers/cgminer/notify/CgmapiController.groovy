@@ -52,11 +52,7 @@ class CgmapiController {
     }
 
     def pools() {
-        PoolsResult result = api.pools()
-
-        storeInSession(result, "pools", 25)
-
-        render(gson.toJson(session["pools"]))
+        render(gson.toJson(cgminerApiService.pools()))
     }
 
     def poolstats() {

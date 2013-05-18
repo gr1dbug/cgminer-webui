@@ -138,8 +138,8 @@ function PoolController($scope, $http) {
     $scope.fetch = function() {
         $http.get('cgmapi/pools').success(function(data) {
             $scope.pools = data;
-            for (var i = 0; i < data[data.length-1].records.length; i++) {
-                $scope.latestpools[data[data.length-1].records[i].call] = data[data.length-1].records[i];
+            for (var i = 0; i < data[data.length-1].pools.length; i++) {
+                $scope.latestpools[data[data.length-1].pools[i].call] = data[data.length-1].pools[i];
             }
         });
     };

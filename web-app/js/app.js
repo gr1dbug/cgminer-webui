@@ -6,7 +6,12 @@
  * To change this template use File | Settings | File Templates.
  */
 
-angular.module("cgmui", [])
+angular.module("cgmui", []).config(["$routeProvider", function($routeProvider) {
+        $routeProvider.when("/ui", {templateUrl: "partials/ui.html", controller: UIController}).
+            when("/notifications", {templateUrl: "partials/notifications.html", controller: NotificationsController}).
+            when("/newnotification", {templateUrl: "partials/newnotification.html", controller: NewNotificationController}).
+            otherwise({redirectTo: "/ui"})
+    }])
     .directive("cgmchart", function() {
         return {
             restrict: "E",
@@ -20,6 +25,53 @@ angular.module("cgmui", [])
     }
 );
 
+function UIController($scope, $http) {
+    console.log("uic inst!");
+};
+
+function NotificationsController($scope, $http) {
+    console.log("notif inst!");
+};
+
+function NewNotificationController($scope, $http) {
+    console.log("nnotif inst!");
+};
+
+
+function NotificationButtonsController($scope, $http, $location) {
+    $scope.latestgpus = {};
+    $scope.latestpools = {};
+
+    $scope.fetch = function() {
+        $http.get('cgmapi/gpucount').success(function(data) {
+            $scope.gpucount = data.count;
+            for (var i = 0; i < $scope.gpucount; i++) {
+                $http.get('cgmapi/gpu?gpu='+i).success(function(data) {
+                    // gpu returns an array of gpuresults that represent a time series of gpu results for an individual gpu
+                    // the latest result in the last one
+                    // the "msg" field in gpuresult is a unique id for the gpu, i.e. "GPU1"
+                    $scope.latestgpus[data[0].msg] = data[data.length-1];
+                });
+            }
+        });
+
+        $http.get('cgmapi/pools').success(function(data) {
+            $scope.pools = data;
+            for (var i = 0; i < data[data.length-1].pools.length; i++) {
+                $scope.latestpools[data[data.length-1].pools[i].call] = data[data.length-1].pools[i];
+            }
+        });
+    };
+
+    $scope.fetch();
+
+    $scope.getpoolclickfn = function(poolnum) {
+        return new function () {
+            console.log("cl: " + poolnum)
+        }
+    }
+
+};
 
 function GpuController($scope, $http) {
     $scope.charts = {};

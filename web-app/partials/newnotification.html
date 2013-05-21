@@ -1,0 +1,121 @@
+
+<div class="container">
+    <div style="width: 100%; margin-top: 75px">
+
+        <div id="timescalepicker">
+            <strong class="brand">To set up a notification, choose a frequency: </strong>
+            <br />
+            <div class="btn-group" data-toggle="buttons-radio">
+                <button type="button" class="btn btn-primary" onclick="showhide('hourlytimepicker', ['dailytimepicker', 'weeklytimepicker']); showhide('notifmaker', []); scale='hourly'">Hourly</button>
+                <button type="button" class="btn btn-primary" onclick="showhide('dailytimepicker', ['hourlytimepicker', 'weeklytimepicker']); showhide('notifmaker', []); scale='daily'">Daily</button>
+                <button type="button" class="btn btn-primary" onclick="showhide('weeklytimepicker', ['dailytimepicker', 'hourlytimepicker']); scale='weekly'">Weekly</button>
+            </div>
+        </div>
+
+        <div id="hourlytimepicker" style="display: none; margin-top: 25px">
+            <strong class="brand">This notification will be sent every hour on the hour. </strong>
+        </div>
+
+        <div id="dailytimepicker" style="display: none; margin-top: 25px">
+            <strong class="brand">This notification will be sent every day at noon. </strong>
+        </div>
+
+        <div id="weeklytimepicker" style="display: none; margin-top: 25px">
+            <strong class="brand">Every week, on this day: </strong>
+            <br />
+            <div class="btn-group" data-toggle="buttons-radio">
+                <button type="button" class="btn btn-primary" onclick="showhide('notifmaker', []); day='sunday'">Sunday</button>
+                <button type="button" class="btn btn-primary" onclick="showhide('notifmaker', []); day='monday'">Monday</button>
+                <button type="button" class="btn btn-primary" onclick="showhide('notifmaker', []); day='tuesday'">Tuesday</button>
+                <button type="button" class="btn btn-primary" onclick="showhide('notifmaker', []); day='wednesday'">Wednesday</button>
+                <button type="button" class="btn btn-primary" onclick="showhide('notifmaker', []); day='thursday'">Thursday</button>
+                <button type="button" class="btn btn-primary" onclick="showhide('notifmaker', []); day='friday'">Friday</button>
+                <button type="button" class="btn btn-primary" onclick="showhide('notifmaker', []); day='saturday'">Saturday</button>
+            </div>
+            <br />
+            <strong class="brand">This notification will be sent at noon, once per week on the selected day. </strong>
+
+        </div>
+
+        <div id="notifmaker" style="display: none; margin-top: 25px">
+            <strong class="brand">Fetch (you can choose more than one): </strong>
+            <br />
+            <div style="margin-bottom: 50px" class="btn-group" data-toggle="buttons-checkbox" ng-controller="NotificationButtonsController">
+                <button ng-repeat="gpu in latestgpus" type="button" class="btn btn-primary" onclick="gpuclicked( {{gpu.call}} )">{{gpu.msg}}</button>>
+                <button ng-repeat="pool in latestpools" type="button" class="btn btn-primary" onclick="poolclicked( {{pool.call}} )">POOL{{pool.call}}</button>>
+            </div>
+            <br />
+
+            <button type="button" class="btn btn-primary" onclick="testnot()">Test</button>
+            <button type="button" class="btn btn-primary" onclick="setnot()">Set Notification</button>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+
+        var scale = "";
+        var day = "";
+        var pools = [];
+        var gpus = [];
+
+        function showhide(id, hide) {
+            $("#" + id).show();
+            $.each(hide, function(i, v) {
+                $("#" + v).hide();
+            });
+        }
+
+        function gpuclicked(num) {
+            if (gpus.indexOf(num) < 0) {
+                // not in the list, so this was a toggle on
+                gpus.push(num);
+            }
+            else {
+                // in the list, so this is a toggle off
+                if (gpus.length == 1) gpus = new Array();
+                else gpus = gpus.splice(gpus.indexOf(num)-1, 1, []);
+            }
+            console.log("arr now: " + gpus);
+        }
+
+        function poolclicked(num) {
+            if (pools.indexOf(num) < 0) {
+                // not in the list, so this was a toggle on
+                pools.push(num);
+            }
+            else {
+                // in the list, so this is a toggle off
+                if (pools.length == 1) pools = new Array();
+                else pools = pools.splice(pools.indexOf(num)-1, 1, []);
+            }
+            console.log("arr now: " + pools);
+        }
+
+        function setnot() {
+            makerequest("setnotification", scale, day, {pe: pools, ge: gpus})
+        }
+
+        function testnot() {
+            makerequest("testnotification", scale, day, {pe: pools, ge: gpus})
+        }
+
+        function makerequest(endpoint, timescale, dayofweek, entries) {
+            console.log("epe: " + entries.pe);
+            console.log("gpe: " + entries.ge);
+            $.post("notifications/" + endpoint, {scale: timescale, day: dayofweek, pools: makeentrystr(entries.pe), gpus: makeentrystr(entries.ge)}, function(data) {
+                console.log("result was: " + data);
+            })
+        }
+
+        function makeentrystr(entries) {
+            var result = "";
+            for (var i = 0; i < entries.length; i++) {
+                result += entries[i];
+                if (i < entries.length-1) result += ",";
+            }
+            return result;
+        }
+    </script>
+
+</div>

@@ -26,6 +26,17 @@ class CgminerApiService {
         updater = null;
     }
 
+    private def expire(type) {
+        type.withTransaction() {
+            long now = new Date().getTime()/1000; // the "when" is a unix style timestamp, i.e. # SECONDS since 1/1/70
+            def old = type.findAllByWhenLessThan(now - ONE_DAY)
+            old.each() { poolitem ->
+                println("now: " + now + ", now - day: " + (now - ONE_DAY) + ", evt time: " + poolitem.when)
+                poolitem.delete(flush: true)
+            }
+        }
+    }
+
     def updateGpus() {
         // we want to get gpu records for all gpus
         Gpu.withTransaction() {
@@ -36,33 +47,16 @@ class CgminerApiService {
             }
         }
 
-        Gpu.withTransaction() {
-            // we then clean out old records (more than 1 day) because we aren't keeping these things longer
-            // than necessary to do our rolling 24hr analytics
-            long now = new Date().getTime()/1000; // the "when" is a unix style timestamp, i.e. # SECONDS since 1/1/70
-            def old = Gpu.findAllByWhenLessThan(now - ONE_DAY)
-            old.each() { event ->
-                println("now: " + now + ", now - day: " + (now - ONE_DAY) + ", evt time: " + event.when)
-                event.delete(flush: true)
-            }
-        }
+        expire(Gpu)
     }
 
     def updatePools() {
         Pools.withTransaction() {
             Pools pools = apiTransformerService.pools(api.pools());
             pools.save(flush: true)
-            def x = "aoeu"
         }
 
-        Pools.withTransaction() {
-            long now = new Date().getTime()/1000; // the "when" is a unix style timestamp, i.e. # SECONDS since 1/1/70
-            def old = Pools.findAllByWhenLessThan(now - ONE_DAY)
-            old.each() { poolitem ->
-                println("now: " + now + ", now - day: " + (now - ONE_DAY) + ", evt time: " + poolitem.when)
-                poolitem.delete(flush: true)
-            }
-        }
+        expire(Pools)
     }
 
     def gpu(num) {

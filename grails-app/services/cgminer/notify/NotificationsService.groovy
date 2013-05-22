@@ -16,8 +16,20 @@ class NotificationsService {
     GntpNotificationInfo payoutNotificationInfo
     GntpClient client
 
-    def serviceMethod() {
+    private Runnable notifier;
 
+    def isUpdating() {
+        return (notifier != null);
+    }
+
+    def startUpdating() {
+        notifier = new NotifierRunnable(this);
+        notifier.start();
+    }
+
+    def stopUpdating() {
+        notifier.stop();
+        notifier = null;
     }
 
 
@@ -31,7 +43,11 @@ class NotificationsService {
         }
     }
 
-    def sendTest(not) {
+    def notifications() {
+        return Notification.findAll()
+    }
+
+    def sendNot(not) {
         initialize()
 
         StringBuilder builder = new StringBuilder()
@@ -46,5 +62,75 @@ class NotificationsService {
         }
 
         client.notify(Gntp.notification(summaryNotificationInfo, "cgminer summary").text(builder.toString()).build(), 5, TimeUnit.SECONDS)
+    }
+
+    def setNotification(not) {
+        not.save(flush: true)
+    }
+
+
+}
+
+class NotifierRunnable implements Runnable {
+    private static final long ONE_HOUR = 60L*60*1000;
+    private static final long ONE_DAY = 24L*ONE_HOUR;
+    private static final long ONE_WEEK = 7L*ONE_DAY;
+
+    private volatile Thread updatethread
+    private NotificationsService notserv
+
+    def NotifierRunnable(notserv) {
+        this.notserv = notserv
+    }
+
+    def Thread start() {
+        updatethread = new Thread(this);
+        updatethread.start();
+        return updatethread;
+    }
+
+    def void stop() {
+        updatethread = null;
+    }
+
+    def void run() {
+        Thread thisthread = Thread.currentThread();
+        while (thisthread == updatethread) {
+            try {
+                checkandsend()
+                Thread.sleep(60000);
+            }
+            catch (InterruptedException ie) {
+                // we don't want to do anything here, if the thread is interrupted in order to stop it
+                // that will happen next time through the while loop
+            }
+        }
+    }
+
+    def checkandsend() {
+        for (Notification not : notserv.notifications()) {
+            def timediff = new Date().getTime() - not.lastSent.getTime()
+            if (not.frequency.equalsIgnoreCase("hourly") && timediff > ONE_HOUR) {
+                notserv.sendNot(not)
+                not.lastSent = new Date()
+                Notification.withTransaction() {
+                    not.save()
+                }
+            }
+            else if (not.frequency.equalsIgnoreCase("daily") && timediff > ONE_DAY) {
+                notserv.sendNot(not)
+                not.lastSent = new Date()
+                Notification.withTransaction() {
+                    not.save()
+                }
+            }
+            else if (not.frequency.equalsIgnoreCase("weekly") && timediff > ONE_WEEK) {
+                notserv.sendNot(not)
+                not.lastSent = new Date()
+                Notification.withTransaction() {
+                    not.save()
+                }
+            }
+        }
     }
 }

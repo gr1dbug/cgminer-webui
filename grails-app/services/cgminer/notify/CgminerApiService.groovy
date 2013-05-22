@@ -66,12 +66,26 @@ class CgminerApiService {
         return results.reverse()
     }
 
+    def latestgpu(num) {
+        return gpu(num).last()
+    }
+
     def pools() {
         // we get the results in descending order so we get the latest n results
         def results = Pools.findAll([max: 15, order: "desc", sort: "when"])
         // what we actually want to return is the list in ascending order however
         return results.reverse()
     }
+
+    def latestpool(num) {
+        def poolslist = pools()
+        def latestpool = poolslist.last()
+        for (Pool pool : latestpool.pools) {
+            if (pool.call.equalsIgnoreCase(String.valueOf(num))) return pool
+        }
+        return null
+    }
+
 
     class UpdateRunnable implements Runnable {
 

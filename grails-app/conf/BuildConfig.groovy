@@ -44,6 +44,8 @@ grails.project.dependency.resolution = {
         // runtime 'mysql:mysql-connector-java:5.1.22'
         runtime "com.google.code.gson:gson:2.2.3"
         runtime "org.codehaus.groovy.modules.http-builder:http-builder:0.5.2"
+        runtime "com.google.guava:guava:14.0"
+        runtime "com.google.code.jgntp:jgntp:1.2.1"
         compile "com.gridbuglabs:cgminer-java-api:1.0-SNAPSHOT"
 }
 

@@ -38,4 +38,41 @@ class Gpu {
     int lastValidWork;
     long timestamp;
 
+
+    @Override
+    public String toString() {
+        return "GpuResult{" +
+                "status='" + status + '\'' +
+                ", when=" + when +
+                ", code=" + code +
+                ", msg='" + msg + '\'' +
+                ", description='" + description + '\'' +
+                ", call='" + call + '\'' +
+                ", enabled='" + enabled + '\'' +
+                ", gpuStatus='" + gpuStatus + '\'' +
+                ", temperature=" + temperature +
+                ", fanSpeed=" + fanSpeed +
+                ", fanPercent=" + fanPercent +
+                ", gpuClock=" + gpuClock +
+                ", memoryClock=" + memoryClock +
+                ", gpuVoltage=" + gpuVoltage +
+                ", gpuActivity=" + gpuActivity +
+                ", powertune=" + powertune +
+                ", mhsav=" + mhsav +
+                ", mhs5s=" + mhs5s +
+                ", accepted=" + accepted +
+                ", rejected=" + rejected +
+                ", hardwareErrors=" + hardwareErrors +
+                ", utility=" + utility +
+                ", intensity=" + intensity +
+                ", lastSharePool=" + lastSharePool +
+                ", lastShareTime=" + lastShareTime +
+                ", totalMH=" + totalMH +
+                ", diff1Work=" + diff1Work +
+                ", difficultyAccepted=" + difficultyAccepted +
+                ", difficultyRejected=" + difficultyRejected +
+                ", lastShareDifficulty=" + lastShareDifficulty +
+                ", lastValidWork=" + lastValidWork +
+                '}';
+    }
 }

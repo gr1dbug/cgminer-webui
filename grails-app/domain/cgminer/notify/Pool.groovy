@@ -36,4 +36,36 @@ class Pool {
     String stratumUrl;
     boolean hasGbt;
     int bestShare;
+
+    @Override
+    public String toString() {
+        return "PoolRecord{" +
+                "call='" + call + '\'' +
+                ", url='" + url + '\'' +
+                ", status='" + status + '\'' +
+                ", priority=" + priority +
+                ", longPoll='" + longPoll + '\'' +
+                ", getworks=" + getworks +
+                ", accepted=" + accepted +
+                ", rejected=" + rejected +
+                ", discarded=" + discarded +
+                ", stale=" + stale +
+                ", getFailures=" + getFailures +
+                ", remoteFailures=" + remoteFailures +
+                ", user='" + user + '\'' +
+                ", lastShareTime=" + lastShareTime +
+                ", diff1Shares=" + diff1Shares +
+                ", proxyType='" + proxyType + '\'' +
+                ", proxy='" + proxy + '\'' +
+                ", diffAccepted=" + diffAccepted +
+                ", diffRejected=" + diffRejected +
+                ", diffStale=" + diffStale +
+                ", lastShareDiff=" + lastShareDiff +
+                ", hasStratum=" + hasStratum +
+                ", stratumActive=" + stratumActive +
+                ", stratumUrl='" + stratumUrl + '\'' +
+                ", hasGbt=" + hasGbt +
+                ", bestShare=" + bestShare +
+                '}';
+    }
 }

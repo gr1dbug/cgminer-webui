@@ -2,7 +2,49 @@
 
 
 <div class="container">
-    <span style="margin: 100px">
-        <a href="cgmapi#/newnotification.html">new</a>
-    </span>
+
+    <div class="span12" style="margin-top: 100px;margin-bottom: 50px">
+        <table class="table">
+            <thead>
+            <tr>
+                <td>id</td>
+                <td>frequency</td>
+                <td>day</td>
+                <td>pools</td>
+                <td>gpus</td>
+                <td>last sent</td>
+                <td>actions</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="greentext" ng-repeat="notification in notifications">
+                <td>{{notification.id}}</td>
+                <td>{{notification.frequency}}</td>
+                <td>{{notification.day}}</td>
+                <td>{{notification.pools}}</td>
+                <td>{{notification.gpus}}</td>
+                <td>{{notification.lastSent}}</td>
+                <td><a class="btn btn-primary" href="#/notifications" onclick="deletenot({{notification.id}})">delete</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-top: 75px;margin-bottom: 50px">
+        <span>
+            <a class="btn btn-primary" href="cgmapi#/newnotification">new</a>
+        </span>
+    </div>
+
+
+    <script type="text/javascript">
+        function deletenot(num) {
+            console.log("we would delete: " + num)
+            $.post("notifications/delete", {id: num}, function(data) {
+                console.log("deleted!");
+                window.location = "cgmapi";
+            });
+        }
+    </script>
 </div>
+

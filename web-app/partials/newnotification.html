@@ -105,6 +105,7 @@
             console.log("gpe: " + entries.ge);
             $.post("notifications/" + endpoint, {scale: timescale, day: dayofweek, pools: makeentrystr(entries.pe), gpus: makeentrystr(entries.ge)}, function(data) {
                 console.log("result was: " + data);
+                window.location = "cgmapi#/notifications";
             })
         }
 

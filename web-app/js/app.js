@@ -31,6 +31,14 @@ function UIController($scope, $http) {
 
 function NotificationsController($scope, $http) {
     console.log("notif inst!");
+
+    $scope.fetch = function() {
+        $http.get('notifications/list').success(function(data) {
+            $scope.notifications = data;
+        });
+    };
+
+    $scope.fetch();
 };
 
 function NewNotificationController($scope, $http) {

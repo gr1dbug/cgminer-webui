@@ -1,8 +1,12 @@
 package cgminer.notify
 
+import com.google.gson.Gson
+import grails.converters.JSON
+
 class NotificationsController {
 
     def notificationsService
+    Gson gson = new  Gson();
 
     def index() {}
 
@@ -26,5 +30,14 @@ class NotificationsController {
         Notification not = makenot(params)
         notificationsService.sendNot(not)
         render("test notification sent!");
+    }
+
+    def list() {
+        render(gson.toJson(notificationsService.notifications()))
+    }
+
+    def delete() {
+        Notification.findById(params.get("id")).delete()
+        render("deleted!")
     }
 }

@@ -42,8 +42,11 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
 
         // runtime 'mysql:mysql-connector-java:5.1.22'
+        compile("org.codehaus.groovy.modules.http-builder:http-builder:0.5.2") {
+            excludes "groovy"
+        }
         runtime "com.google.code.gson:gson:2.2.3"
-        runtime "org.codehaus.groovy.modules.http-builder:http-builder:0.5.2"
+//        runtime "org.codehaus.groovy.modules.http-builder:http-builder:0.5.2"
         runtime "com.google.guava:guava:14.0"
         runtime "com.google.code.jgntp:jgntp:1.2.1"
         compile "com.gridbuglabs:cgminer-java-api:1.0-SNAPSHOT"

@@ -7,7 +7,7 @@ class CgminerApiService {
 
     ApiTransformerService apiTransformerService
     private CGMinerApi api = new CGMinerApi()
-    private static final long ONE_DAY = 24L*60*60;
+    private static final long ONE_MINUTE = 60;
 
 
     private Runnable updater;
@@ -29,9 +29,9 @@ class CgminerApiService {
     private def expire(type) {
         type.withTransaction() {
             long now = new Date().getTime()/1000; // the "when" is a unix style timestamp, i.e. # SECONDS since 1/1/70
-            def old = type.findAllByWhenLessThan(now - ONE_DAY)
+            def old = type.findAllByWhenLessThan(now - ONE_MINUTE)
             old.each() { poolitem ->
-                println("now: " + now + ", now - day: " + (now - ONE_DAY) + ", evt time: " + poolitem.when)
+                println("now: " + now + ", now - day: " + (now - ONE_MINUTE) + ", evt time: " + poolitem.when)
                 poolitem.delete(flush: true)
             }
         }

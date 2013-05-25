@@ -14,7 +14,7 @@ To use,
 * Install [growl](http://www.growlforwindows.com/gfw/)
 * Optionally, you can install Prowl on your phone and set up forwarding in growl to get the notifications on your phone
 * Get [this file](https://dl.dropboxusercontent.com/u/8425729/mining-webui-jetty.zip), unzip, open command prompt, ensure java 7
-is in your path, change do directory where you unzipped it, run "java -jar start.jar". If you get a windows firewall
+is in your path, change to directory where you unzipped it, run "java -jar start.jar". If you get a windows firewall
 thing (you will if it's enabled, because this is just a distribution of jetty with the grails web app already included
 in the correct place), hit allow
 * Open browser to http://localhost:8080/cgmapi (probably chrome or firefox only, not tested with IE)

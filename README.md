@@ -9,7 +9,7 @@ miners into one UI, and it could use some testing. No security guarantees! I wou
 more analytics and more customizable notifications.
 
 To use,
-* Install cgminer, run it with you usual parameters plus: --api-listen --api-allow W:127.0.0.1
+* Install cgminer, run it with your usual parameters plus: --api-listen --api-allow W:127.0.0.1
 * Install Java 7
 * Install [growl](http://www.growlforwindows.com/gfw/)
 * Optionally, you can install Prowl on your phone and set up forwarding in growl to get the notifications on your phone
